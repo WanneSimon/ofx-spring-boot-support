@@ -9,7 +9,7 @@
 #### 依赖
 ```
 <dependency>
-    <groupId>cc.wanforme.ofx</groupId>
+    <groupId>cc.wanforme</groupId>
     <artifactId>ofx-spring-boot-support</artifactId>
     <version>0.0.1</version>
 </dependency>
