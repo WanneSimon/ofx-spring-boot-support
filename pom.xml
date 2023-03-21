@@ -1,0 +1,229 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>9</version>
+    </parent>
+
+    <groupId>cc.wanforme.ofx</groupId>
+    <artifactId>ofx-spring-boot-support</artifactId>
+    <version>0.0.1</version>
+
+
+    <name>ofx-spring-boot-support</name>
+    <description>SpringBoot starter for java openfx</description>
+    <url>https://github.com/WanneSimon/ofx-spring-boot-support</url>
+    <licenses>
+        <license>
+            <name>GPL-3.0 license</name>
+            <url>https://github.com/WanneSimon/ofx-spring-boot-support/blob/main/LICENSE</url>
+        </license>
+    </licenses>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.compilerVersion>17</maven.compiler.compilerVersion>
+        <java.version>17</java.version>
+        <!-- <log4j-to-slf4j.version>2.11.1</log4j-to-slf4j.version>  -->
+        
+        <spring-boot.version>2.7.9</spring-boot.version>
+        <!--<slf4j.version>1.7.36</slf4j.version>-->
+    	<javafx-fxml.version>19.0.2.1</javafx-fxml.version>
+
+    </properties>
+
+
+    <developers>
+        <developer>
+            <name>wanne</name>
+            <email>wanneseville@foxmail.com</email>
+            <organization>https://github.com/WanneSimon</organization>
+            <url>https://blog.wanforme.cc</url>
+        </developer>
+    </developers>
+    
+    <scm>
+        <connection>scm:git:https://github.com/WanneSimon/ofx-spring-boot-support.git</connection>
+        <developerConnection>scm:git:https://github.com/WanneSimon/ofx-spring-boot-support.git</developerConnection>
+        <url>https://github.com/WanneSimon/ofx-spring-boot-support.git</url>
+    </scm>
+    
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+    
+     <dependencyManagement>
+        <dependencies>
+          <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-parent</artifactId>
+            <version>${spring-boot.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+          </dependency>
+        </dependencies>
+      </dependencyManagement>
+      <!-- -->
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <scope>provided</scope>
+            <!-- <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions> -->
+        </dependency>
+	    <dependency>
+	      <groupId>org.springframework.boot</groupId>
+	      <artifactId>spring-boot-autoconfigure</artifactId>
+	    </dependency>
+	    <!--
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-aop</artifactId>
+		</dependency>
+        -->
+        
+        <!-- 引入log4j2依赖
+        <dependency>
+            <groupId>org.springframework.boot</groupId>  
+            <artifactId>spring-boot-starter-log4j2</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        -->
+        
+	    <dependency>
+	      <groupId>org.openjfx</groupId>
+	      <artifactId>javafx-fxml</artifactId>
+	      <version>${javafx-fxml.version}</version>
+	    </dependency>
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+                <filtering>false</filtering>
+            </resource>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>ossrh</id>
+                    <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+                </snapshotRepository>
+                <repository>
+                    <id>ossrh</id>
+                    <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+                </repository>
+            </distributionManagement>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.4.1</version>
+                        <configuration>
+                            <aggregate>true</aggregate>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                                <configuration> <!-- add this to disable checking -->
+                                    <additionalparam>-Xdoclint:none</additionalparam>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>3.2.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+</project>
