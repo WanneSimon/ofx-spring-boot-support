@@ -69,7 +69,7 @@ public abstract class BaseOFXApplication extends Application {
 
 	/** custom style for primary stage
 	 * 自定义舞台的设置和样式
-	 * @param scene
+	 * @param primaryStage
 	 */
 	protected abstract void stage(Stage primaryStage);
 	

@@ -2,7 +2,9 @@
 这是一个在 java 模块化编程环境下 (java9+)，将 `SpringBoot` 和 `OpenJFX` 集成的工具。  
 测试使用的 springboot 版本是 2.7.9  
 如果你在找 `java8` 的支持，请移步到这里： [springboot-javafx-support](https://github.com/roskenet/springboot-javafx-support.git)  
-注：并不是一定要使用模块编程，如果你不熟悉，最好使用传统开发方式
+注：并不是一定要使用模块编程，如果你不熟悉，最好使用传统开发方式  
+  
+[English](README.md) | [中文](README.CN.md)
 ### 使用
 #### 依赖
 ```
