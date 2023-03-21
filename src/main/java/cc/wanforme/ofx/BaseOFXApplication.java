@@ -14,6 +14,10 @@ public abstract class BaseOFXApplication extends Application {
 	private static Class<? extends BaseView> launchView;
 	private static Class<? extends BaseOFXApplication> launchApp;
 	
+	// we just can't declare stage here if using spring proxy, why ?
+//	private Stage stage;
+	private static Stage stage;
+	
 	/** launch application ( SpringBoot and FXApplication )
 	 * @param app 
 	 * @param mainView 
@@ -40,6 +44,7 @@ public abstract class BaseOFXApplication extends Application {
 	@Override
 	public void start(Stage pStage) throws Exception {
 		Assert.notNull(launchView, "The main view does not set");
+		stage = pStage;
 		
 		BaseView view = ViewHolder.get().getBaseView(launchView);
 		
@@ -67,5 +72,10 @@ public abstract class BaseOFXApplication extends Application {
 	 * @param scene
 	 */
 	protected abstract void stage(Stage primaryStage);
+	
+	/** do not invoke this method before FXApplication launched */
+	public static Stage getStage() {
+		return stage;
+	}
 	
 }

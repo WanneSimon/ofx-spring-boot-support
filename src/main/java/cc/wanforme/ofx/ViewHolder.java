@@ -27,10 +27,22 @@ public class ViewHolder implements ApplicationContextAware{
 	private ApplicationContext context;
 	
 	public ViewHolder() {
-		instance = this;
+		boolean re = false;
+		synchronized (ViewHolder.class) {
+			if(instance == null) {
+				instance = this;
+				re = true;
+			}
+		}
+		
+		if(!re) {
+			throw new RuntimeException("View Holder has been created!");
+		}
 	}
 	
-	/** fxml and associate classes<br>
+	/** fxml and associate classes <br>
+	 * A *.fxml file can bind multi class in design in the beginning, but now it doesn't make any sense.<br>
+	 * 在一开始的设计中，一个 fxml 文件可以绑定多个 class ，但后来发现没有意义。
 	 * */
 	private Map<String, List<BaseView>> baseViewCache = new ConcurrentHashMap<>();
 	
@@ -44,16 +56,10 @@ public class ViewHolder implements ApplicationContextAware{
 	 * @param clazz
 	 * @return
 	 */
-	public BaseView getBaseView(Class<? extends BaseView> clazz) {
-//		Map<String,BaseView> map = context.getBeansOfType(BaseView.class);
-//		Iterator<Entry<String, BaseView>> iterator = map.entrySet().iterator();
-//		while (iterator.hasNext()) {
-//			Entry<String,BaseView> entry = iterator.next();
-//			System.out.println(entry.getKey() + ", " + entry.getValue().getClass().getCanonicalName());
-//		}
+	public <T extends BaseView> T getBaseView(Class<T> clazz) {
 		return context.getBean(clazz);
 	}
-	public Object getBean(Class<?> clazz) {
+	public <T> T getBean(Class<T> clazz) {
 		return context.getBean(clazz);
 	}
 	
@@ -62,7 +68,7 @@ public class ViewHolder implements ApplicationContextAware{
 	 * @param clazz
 	 * @return
 	 */
-	public BaseView getBaseView(String name, Class<? extends BaseView> clazz) {
+	public <T extends BaseView> T getBaseView(String name, Class<T> clazz) {
 		return context.getBean(name, clazz);
 	}
 	
@@ -72,11 +78,11 @@ public class ViewHolder implements ApplicationContextAware{
 	 * @param clazz
 	 * @return
 	 */
-	public BaseView getBaseView(Class<? extends BaseView> clazz, String name) {
+	public <T extends BaseView> T getBaseView(Class<T> clazz, String name) {
 		try {
 			return context.getBean(clazz);
 		} catch (NoUniqueBeanDefinitionException e) {
-			Map<String, ? extends BaseView> beans = context.getBeansOfType(clazz);
+			Map<String, T> beans = context.getBeansOfType(clazz);
 			Set<String> keys = beans.keySet();
 			Optional<String> opt = keys.parallelStream()
 					.filter(el -> Objects.equals(name, el))
@@ -117,11 +123,13 @@ public class ViewHolder implements ApplicationContextAware{
 				
 				Class<? extends BaseView> clazz = view.getClass();
 				FXMLView anno = clazz.getAnnotation(FXMLView.class);
-				if(anno == null) {
+				Optional<String> pathOpt = Optional.ofNullable(anno)
+						.map(FXMLView::path);
+				if(!pathOpt.isPresent()) {
 					throw new RuntimeException("fxml file isn't specific. " + clazz.getCanonicalName());
 				}
 				
-				String path = anno.value();
+				String path = pathOpt.get();
 				
 				List<BaseView> views = baseViewCache.computeIfAbsent(path, 
 						e -> new ArrayList<>(1));

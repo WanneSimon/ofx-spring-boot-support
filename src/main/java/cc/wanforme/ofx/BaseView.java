@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 
 import org.springframework.boot.system.ApplicationHome;
 import org.springframework.core.io.ClassPathResource;
@@ -15,7 +16,6 @@ import javafx.scene.layout.Pane;
  * container for fxml
  */
 public abstract class BaseView {
-	private static final FXMLLoader DEFAULT_LOADER = new FXMLLoader();
 	
 	private FXMLLoader loader;
 	private Pane pane;
@@ -29,7 +29,7 @@ public abstract class BaseView {
 	
 	public BaseView() {
 		FXMLLoader cust = customFXMLLoader();
-		loader = cust == null ? DEFAULT_LOADER : cust;
+		loader = cust == null ? defaultFXMLLoader() : cust;
 		
 		loader.setControllerFactory(clazz -> {
 			return ViewHolder.get().getBean(clazz);
@@ -46,7 +46,7 @@ public abstract class BaseView {
 	 * @return
 	 */
 	public FXMLLoader customFXMLLoader() {
-		return DEFAULT_LOADER;
+		return defaultFXMLLoader();
 	}
 	
 	/** load fxml when bean created <br>
@@ -72,11 +72,13 @@ public abstract class BaseView {
 		
 		Class<? extends BaseView> clazz = getClass();
 		FXMLView anno = clazz.getAnnotation(FXMLView.class);
-		if(anno == null) {
+		Optional<String> pathOpt = Optional.ofNullable(anno)
+			.map(FXMLView::path);
+		if(!pathOpt.isPresent()) {
 			throw new RuntimeException("fxml file isn't specific. " + clazz.getCanonicalName());
 		}
 		
-		String path = anno.value();
+		String path = pathOpt.get();
 		try {
 			InputStream is = this.loadResource(path);
 			Object load = loader.load(is);
@@ -92,14 +94,22 @@ public abstract class BaseView {
 		return loader;
 	}
 	public Pane getPane() {
-		if(pane == null) {
+		return getPane(false);
+	}
+	
+	/** get Pane , regenerate a pane if 'recreate' is true
+	 * @param recreate
+	 * @return
+	 */
+	public Pane getPane(boolean recreate) {
+		if(recreate || pane == null) {
+			// TODO destroy old
+			//if(recreate && pane!=null) {
+			//}
 			this.loadFxml();
 		}
 		return pane;
 	}
-//	public void setPane(Pane pane) {
-//		this.pane = pane;
-//	}
 	
 	public String getBeanName() {
 		return beanName;
@@ -135,4 +145,8 @@ public abstract class BaseView {
 //		return resource.getInputStream();
 	}
 	
+	private FXMLLoader defaultFXMLLoader() {
+		// loader can't  be reused, so create one
+		return new FXMLLoader();
+	}
 }

@@ -17,6 +17,6 @@ public @interface FXMLView {
 	/*
 	 * file path (starts with '/')  
 	 */
-	String value();
+	String path();
 	
 }
