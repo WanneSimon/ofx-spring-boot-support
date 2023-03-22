@@ -2,9 +2,10 @@
 `SpringBoot` and `OpenJFX` , simple integration (java9+)  
 looking for `javaFX8` ?  see [springboot-javafx-support](https://github.com/roskenet/springboot-javafx-support.git)  
   
-[English](README.md) | [中文](README.CN.md)
+[English](README.md) | [中文](README.CN.md)  
+  
+[demo](https://github.com/WanneSimon/ofxDemo-spring-boot-support)  
 
-**note: version-0.0.2 is publishing, partial functional reconstruction.**
 ### Usage
 #### dependency
 ```

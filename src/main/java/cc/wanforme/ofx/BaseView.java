@@ -145,7 +145,7 @@ public abstract class BaseView {
 	
 	/**
 	 * if you want to change how to load fxml file, override this method.
-	 * @param relativePath
+	 * @param path
 	 * @return
 	 * @throws IOException 
 	 */
@@ -157,7 +157,7 @@ public abstract class BaseView {
 	 * 1. {project}/{path} <br>
 	 * 2. {project}/src/main/resources/{path} <br>
 	 * 1. {jar-classpath}/{path} <br>
-	 * @param relativePath
+	 * @param path
 	 * @return
 	 * @throws IOException 
 	 */

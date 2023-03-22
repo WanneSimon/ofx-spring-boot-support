@@ -4,7 +4,9 @@
 如果你在找 `java8` 的支持，请移步到这里： [springboot-javafx-support](https://github.com/roskenet/springboot-javafx-support.git)  
 注：并不是一定要使用模块编程，如果你不熟悉，最好使用传统开发方式  
   
-[English](README.md) | [中文](README.CN.md)
+[English](README.md) | [中文](README.CN.md)  
+  
+[demo](https://github.com/WanneSimon/ofxDemo-spring-boot-support)  
 
 **note: 0.0.2 还没有上传，部分功能重构**
 ### 使用
