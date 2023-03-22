@@ -5,25 +5,37 @@
 注：并不是一定要使用模块编程，如果你不熟悉，最好使用传统开发方式  
   
 [English](README.md) | [中文](README.CN.md)
+
+**note: 0.0.2 还没有上传，部分功能重构**
 ### 使用
 #### 依赖
 ```
-<dependency>
-    <groupId>cc.wanforme</groupId>
-    <artifactId>ofx-spring-boot-support</artifactId>
-    <version>0.0.1</version>
-</dependency>
-<dependency>
-  <groupId>org.openjfx</groupId>
-  <artifactId>javafx-fxml</artifactId>
-  <version>19.0.2.1</version>
-</dependency>
-<!-- necessary if springboot's configuration is *.yml or *.yaml -->
-<dependency>
-    <groupId>org.yaml</groupId>
-    <artifactId>snakeyaml</artifactId>
-    <version>1.30</version>
-</dependency>
+<repositories>
+    <repository>
+      <id>ossrh</id>
+      <name>ossrh</name>
+      <url>https://s01.oss.sonatype.org/content/repositories/releases/</url>
+    </repository>
+</repositories>
+
+<dependencies>
+  <dependency>
+      <groupId>cc.wanforme</groupId>
+      <artifactId>ofx-spring-boot-support</artifactId>
+      <version>0.0.2</version>
+  </dependency>
+  <dependency>
+    <groupId>org.openjfx</groupId>
+    <artifactId>javafx-fxml</artifactId>
+    <version>19.0.2.1</version>
+  </dependency>
+  <!-- necessary if springboot's configuration is *.yml or *.yaml and you have module-info.java  -->
+  <dependency>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+      <version>1.30</version>
+  </dependency>
+</dependencies>
 ```
 #### Coding
 声明 fxml 文件
@@ -90,6 +102,23 @@ module cc.wanforme.ofxDemo {
 
 	exports cc.wanforme.ofxDemo;
 	opens cc.wanforme.ofxDemo;
+}
+```
+
+#### 单个 fxml 绑定多个 BaseView 类
+FXML 的 Controller 需要定义为多态。  
+`Scene` `FXMLLoader` `FXMLController` 是一对一的关系，复用 fxml 时请小心。虽然界面一样，但内部对象不一样。
+```
+@FXMLController
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE) 
+public class ImageSearchController {
+    //@FXML
+    //private FlowPane imgShowContainer;
+    //@FXML
+    //private TextField imgSearcherInput;
+
+    //@Autowired
+    //private ImgSelectorHandler handler;
 }
 ```
 

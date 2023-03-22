@@ -4,42 +4,53 @@ looking for `javaFX8` ?  see [springboot-javafx-support](https://github.com/rosk
   
 [English](README.md) | [中文](README.CN.md)
 
+**note: version-0.0.2 is publishing, partial functional reconstruction.**
 ### Usage
 #### dependency
 ```
-<dependency>
-    <!-- not upload yet -->
-    <groupId>cc.wanforme</groupId>
-    <artifactId>ofx-spring-boot-support</artifactId>
-    <version>0.0.1</version>
-</dependency>
-<dependency>
-  <groupId>org.openjfx</groupId>
-  <artifactId>javafx-fxml</artifactId>
-  <version>19.0.2.1</version>
-</dependency>
-<!-- necessary if springboot's configuration is *.yml or *.yaml and you have module-info.java  -->
-<dependency>
-    <groupId>org.yaml</groupId>
-    <artifactId>snakeyaml</artifactId>
-    <version>1.30</version>
-</dependency>
+<repositories>
+    <repository>
+      <id>ossrh</id>
+      <name>ossrh</name>
+      <url>https://s01.oss.sonatype.org/content/repositories/releases/</url>
+    </repository>
+</repositories>
+
+<dependencies>
+  <dependency>
+      <groupId>cc.wanforme</groupId>
+      <artifactId>ofx-spring-boot-support</artifactId>
+      <version>0.0.2</version>
+  </dependency>
+  <dependency>
+    <groupId>org.openjfx</groupId>
+    <artifactId>javafx-fxml</artifactId>
+    <version>19.0.2.1</version>
+  </dependency>
+  <!-- necessary if springboot's configuration is *.yml or *.yaml and you have module-info.java  -->
+  <dependency>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+      <version>1.30</version>
+  </dependency>
+</dependencies>
 ```
 #### Coding
-Declaring fxml file and view
+Declaring fxml file and view, bind a BaseView class
 ```
 @FXMLView("fxml/ImageSelector.fxml")
 public class TestView extends BaseView{
 
-	@Override
-	public void loaded() {
-		// do something after fxml loaded
-	}
+    @Override
+    public void loaded() {
+        // do something after fxml loaded
+    }
 }
 ```
 Declaring controller in fxml
 ```
 @FXMLController
+//@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE) 
 public class ImageSearchController {
     //@FXML
     //private FlowPane imgShowContainer;
@@ -54,44 +65,62 @@ Main class
 ```
 @SpringBootApplication
 public class OFXApp extends BaseOFXApplication {
-	public static void main(String[] args) {
-		launchOFX(OFXApp.class, TestView.class, args);
-	}
+    public static void main(String[] args) {
+        launchOFX(OFXApp.class, TestView.class, args);
+    }
 
-	@Override
-	protected void scene(Scene scene) {
-		// custom settings
-	}
+    @Override
+    protected void scene(Scene scene) {
+        // custom settings
+    }
 
-	@Override
-	protected void stage(Stage primaryStage) {
-		// custom settings
-	}
+    @Override
+    protected void stage(Stage primaryStage) {
+        // custom settings
+    }
 }
 ```
 module-info.java
 ```
 module cc.wanforme.ofxDemo {
-	requires cc.wanforme.ofx;
+    requires cc.wanforme.ofx;
 
-	requires javafx.base;
-	requires javafx.controls;
-	requires javafx.fxml;
-	requires transitive javafx.graphics;
+    requires javafx.base;
+    requires javafx.controls;
+    requires javafx.fxml;
+    requires transitive javafx.graphics;
 
-	requires spring.beans;
-	requires spring.boot.autoconfigure;
-	requires spring.core;
+    requires spring.beans;
+    requires spring.boot.autoconfigure;
+    requires spring.core;
 
-	requires org.apache.tika.core;
-	requires org.slf4j;
+    requires org.apache.tika.core;
+    requires org.slf4j;
 
-	requires transitive java.sql;
+    requires transitive java.sql;
 
-	exports cc.wanforme.ofxDemo;
-	opens cc.wanforme.ofxDemo;
+    exports cc.wanforme.ofxDemo;
+    opens cc.wanforme.ofxDemo;
 }
 ```
+
+#### A fxml with multi BaseView
+A *.fxml file associate with multi BaseView classes,  
+Controller should be 'prototype'
+```
+@FXMLController
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE) 
+public class ImageSearchController {
+    //@FXML
+    //private FlowPane imgShowContainer;
+    //@FXML
+    //private TextField imgSearcherInput;
+
+    //@Autowired
+    //private ImgSelectorHandler handler;
+}
+```
+
 ### package
 If you run `mvn clean package` failed, try with your IDE .
 #### packaging with `spring-boot`
@@ -132,9 +161,9 @@ We still need springboot's maven plugin
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-maven-plugin</artifactId>
       <configuration>
-      	<mainClass>cc.wanforme.ofxDemo.OFXApp</mainClass>
-      	<!-- exclude openjfx jars -->
-      	<excludeGroupIds>org.openjfx</excludeGroupIds>
+          <mainClass>cc.wanforme.ofxDemo.OFXApp</mainClass>
+          <!-- exclude openjfx jars -->
+          <excludeGroupIds>org.openjfx</excludeGroupIds>
       </configuration>
     </plugin>
 

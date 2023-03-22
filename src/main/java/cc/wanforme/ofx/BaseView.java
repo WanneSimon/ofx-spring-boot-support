@@ -10,6 +10,7 @@ import org.springframework.boot.system.ApplicationHome;
 import org.springframework.core.io.ClassPathResource;
 
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 
 /*
@@ -18,9 +19,10 @@ import javafx.scene.layout.Pane;
 public abstract class BaseView {
 	
 	private FXMLLoader loader;
-	private Pane pane;
+	private Pane pane; // the root of scene
+ 	private Scene scene;
 
-	// spring bean name
+	// spring bean name (auto set by spring)
 	private String beanName;
 	// load fxml when bean created
 	private boolean loadEager = false;
@@ -35,6 +37,7 @@ public abstract class BaseView {
 			return ViewHolder.get().getBean(clazz);
 		});
 		
+		loadEager = this.isLoadEager();
 		if(loadEager) {
 			this.loadFxml();
 		}
@@ -51,10 +54,10 @@ public abstract class BaseView {
 	
 	/** load fxml when bean created <br>
 	 * 在 bean 创建的时候立即加载 fxml 文件
-	 * @param loadEager default false
+	 * @return default false
 	 */
-	public void setLoadEager(boolean loadEager) {
-		this.loadEager = loadEager;
+	public boolean isLoadEager() {
+		return false;
 	}
 	
 	/**
@@ -66,28 +69,32 @@ public abstract class BaseView {
 	 * load fxml file
 	 * */
 	protected synchronized void loadFxml() {
-		if(this.pane != null) {
+		if(this.pane != null && this.scene != null) {
 			return;
 		}
 		
-		Class<? extends BaseView> clazz = getClass();
-		FXMLView anno = clazz.getAnnotation(FXMLView.class);
-		Optional<String> pathOpt = Optional.ofNullable(anno)
-			.map(FXMLView::path);
-		if(!pathOpt.isPresent()) {
-			throw new RuntimeException("fxml file isn't specific. " + clazz.getCanonicalName());
-		}
-		
-		String path = pathOpt.get();
-		try {
-			InputStream is = this.loadResource(path);
-			Object load = loader.load(is);
-			this.pane = (Pane) load;
-		} catch (IOException e) {
-			throw new RuntimeException("fxml file load failed. " + clazz.getCanonicalName(), e);
-		}
-		
-		this.loaded();
+		if(this.pane == null) {
+			Class<? extends BaseView> clazz = getClass();
+			FXMLView anno = clazz.getAnnotation(FXMLView.class);
+			Optional<String> pathOpt = Optional.ofNullable(anno)
+					.map(FXMLView::path);
+			if(!pathOpt.isPresent()) {
+				throw new RuntimeException("fxml file isn't specific. " + clazz.getCanonicalName());
+			}
+			
+			String path = pathOpt.get();
+			try {
+				InputStream is = this.loadFXMLResource(path);
+				Object load = loader.load(is);
+				this.pane = (Pane) load;
+			} catch (IOException e) {
+				throw new RuntimeException("fxml file load failed. " + clazz.getCanonicalName(), e);
+			}
+			scene = new Scene(this.pane);
+			this.loaded();
+		} else { // impossible
+			scene = new Scene(this.pane);
+		}		
 	}
 	
 	public FXMLLoader getLoader() {
@@ -111,6 +118,24 @@ public abstract class BaseView {
 		return pane;
 	}
 	
+//	private AtomicBoolean sceneLock = new AtomicBoolean(false) ;
+	public Scene getScene() {
+//		if(scene == null) {
+//			if(!sceneLock.compareAndSet(false, true)) {
+//				if(scene == null) {
+//					Pane p = getPane();
+//					scene = new Scene(p);
+//				}
+//				sceneLock.set(false);
+//			}
+//		}
+		if(scene == null) {
+			this.loadFxml();
+		}
+		return scene;
+	}
+	
+	/** spring bean name (auto set by spring) */
 	public String getBeanName() {
 		return beanName;
 	}
@@ -124,7 +149,19 @@ public abstract class BaseView {
 	 * @return
 	 * @throws IOException 
 	 */
-	private InputStream loadResource(String path) throws IOException {
+	protected InputStream loadFXMLResource(String path) throws IOException {
+		return loadResource(path);
+	}
+	
+	/** load resource. order: <br>
+	 * 1. {project}/{path} <br>
+	 * 2. {project}/src/main/resources/{path} <br>
+	 * 1. {jar-classpath}/{path} <br>
+	 * @param relativePath
+	 * @return
+	 * @throws IOException 
+	 */
+	public static InputStream loadResource(String path) throws IOException {
 		File location = new ApplicationHome().getDir();
 		File file = new File(location.getAbsolutePath() + "/" + path);
 		
@@ -140,9 +177,6 @@ public abstract class BaseView {
 			ClassPathResource resource = new ClassPathResource(path);
 			return resource.getInputStream();
 		}
-		
-//		ClassPathResource resource = new ClassPathResource(path);
-//		return resource.getInputStream();
 	}
 	
 	private FXMLLoader defaultFXMLLoader() {

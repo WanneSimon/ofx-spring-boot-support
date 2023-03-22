@@ -48,8 +48,8 @@ public abstract class BaseOFXApplication extends Application {
 		
 		BaseView view = ViewHolder.get().getBaseView(launchView);
 		
-		Pane root = view.getPane();
-		Scene scene = new Scene(root);
+		//Pane root = view.getPane();
+		Scene scene = view.getScene();
 		scene(scene);
 		
 		pStage.setScene(scene);

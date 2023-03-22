@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class ViewHolder implements ApplicationContextAware{
+	// I do not find a proper way to inject, so make it static 
 	private static volatile ViewHolder instance = null;
 	private ApplicationContext context;
 	
