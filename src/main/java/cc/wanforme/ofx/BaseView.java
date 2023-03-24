@@ -10,8 +10,8 @@ import org.springframework.boot.system.ApplicationHome;
 import org.springframework.core.io.ClassPathResource;
 
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
 
 /*
  * container for fxml
@@ -19,7 +19,7 @@ import javafx.scene.layout.Pane;
 public abstract class BaseView {
 	
 	private FXMLLoader loader;
-	private Pane pane; // the root of scene
+	private Parent pane; // the root of scene
  	private Scene scene;
 
 	// spring bean name (auto set by spring)
@@ -86,7 +86,7 @@ public abstract class BaseView {
 			try {
 				InputStream is = this.loadFXMLResource(path);
 				Object load = loader.load(is);
-				this.pane = (Pane) load;
+				this.pane = (Parent) load;
 			} catch (IOException e) {
 				throw new RuntimeException("fxml file load failed. " + clazz.getCanonicalName(), e);
 			}
@@ -100,7 +100,7 @@ public abstract class BaseView {
 	public FXMLLoader getLoader() {
 		return loader;
 	}
-	public Pane getPane() {
+	public Parent getPane() {
 		return getPane(false);
 	}
 	
@@ -108,7 +108,7 @@ public abstract class BaseView {
 	 * @param recreate
 	 * @return
 	 */
-	public Pane getPane(boolean recreate) {
+	public Parent getPane(boolean recreate) {
 		if(recreate || pane == null) {
 			// TODO destroy old
 			//if(recreate && pane!=null) {
@@ -120,15 +120,6 @@ public abstract class BaseView {
 	
 //	private AtomicBoolean sceneLock = new AtomicBoolean(false) ;
 	public Scene getScene() {
-//		if(scene == null) {
-//			if(!sceneLock.compareAndSet(false, true)) {
-//				if(scene == null) {
-//					Pane p = getPane();
-//					scene = new Scene(p);
-//				}
-//				sceneLock.set(false);
-//			}
-//		}
 		if(scene == null) {
 			this.loadFxml();
 		}

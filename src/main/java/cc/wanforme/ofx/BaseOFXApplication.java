@@ -5,7 +5,6 @@ import org.springframework.util.Assert;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 public abstract class BaseOFXApplication extends Application {
