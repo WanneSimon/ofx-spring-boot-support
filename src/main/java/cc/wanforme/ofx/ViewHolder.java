@@ -52,6 +52,10 @@ public class ViewHolder implements ApplicationContextAware{
 		this.context = applicationContext;
 	}
 
+	public ApplicationContext getContext() {
+		return context;
+	}
+
 	/** get by Class <br>
 	 * 根据具体的子类获取
 	 * @param clazz
