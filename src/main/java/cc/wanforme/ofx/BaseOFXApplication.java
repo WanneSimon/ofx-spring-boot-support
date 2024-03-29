@@ -1,6 +1,10 @@
 package cc.wanforme.ofx;
 
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.SpringApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.util.Assert;
 
 import javafx.application.Application;
@@ -11,20 +15,25 @@ public abstract class BaseOFXApplication extends Application {
 	
 	private static String[] launchArgs = {};
 	private static Class<? extends BaseView> launchView;
-	private static Class<? extends BaseOFXApplication> launchApp;
-	
-	// we just can't declare stage here if using spring proxy, why ?
-//	private Stage stage;
-	private static Stage stage;
+	private static Class<? extends BaseOFXApplication> fxApp;
+	private static Class<?> springApp;
+
+//	private static Stage stage;
 	
 	/** launch application ( SpringBoot and FXApplication )
 	 * @param app 
 	 * @param mainView 
 	 * @param args 
 	 */
-	public static void launchOFX(Class<? extends BaseOFXApplication> app, 
-			Class<? extends BaseView> mainView, String[] args) {
-		launchApp = app;
+	public static void launchOFX(Class<? extends BaseOFXApplication> app,
+								 Class<?> springApp,
+								 Class<? extends BaseView> mainView, String[] args) {
+		if (app == springApp) {
+			throw new RuntimeException("Fx main application's class can't be the same as spring application's class");
+		}
+
+		BaseOFXApplication.fxApp = app;
+		BaseOFXApplication.springApp = springApp;
 		launchArgs  = args;
 		launchView = mainView;
 		launch(app, launchArgs);
@@ -37,13 +46,13 @@ public abstract class BaseOFXApplication extends Application {
 	
 	@Override
 	public void init() throws Exception {
-		startSpringApp(launchApp, launchArgs);
+		startSpringApp(springApp, launchArgs);
 	}
 	
 	@Override
 	public void start(Stage pStage) throws Exception {
 		Assert.notNull(launchView, "The main view does not set");
-		stage = pStage;
+//		stage = pStage;
 		
 		BaseView view = ViewHolder.get().getBaseView(launchView);
 		
@@ -58,8 +67,8 @@ public abstract class BaseOFXApplication extends Application {
 		afterShow();
 	}
 	
-	private static void startSpringApp(Class<?> clazz, String[] args) {
-		SpringApplication.run(clazz, args);
+	private static ConfigurableApplicationContext startSpringApp(Class<?> clazz, String[] args) {
+		return SpringApplication.run(clazz, args);
 	}
 	
 	/** custom style for scene <br>
@@ -74,10 +83,10 @@ public abstract class BaseOFXApplication extends Application {
 	 */
 	protected abstract void stage(Stage primaryStage);
 	
-	/** do not invoke this method before FXApplication launched */
-	public static Stage getStage() {
-		return stage;
-	}
+//	/** do not invoke this method before FXApplication launched */
+//	public static Stage getStage() {
+//		return stage;
+//	}
 
 	/** do something after stage.show() */
 	protected void afterShow() {

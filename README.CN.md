@@ -11,7 +11,7 @@
 **note: 0.0.2 还没有上传，部分功能重构**
 ### 使用
 #### 依赖
-```
+``` xml
 <repositories>
     <repository>
       <id>ossrh</id>
@@ -41,7 +41,7 @@
 ```
 #### Coding
 声明 fxml 文件
-```
+``` java
 @FXMLView("fxml/ImageSelector.fxml")
 public class TestView extends BaseView{
 
@@ -52,7 +52,7 @@ public class TestView extends BaseView{
 }
 ```
 声明 fxml 中的 controller
-```
+``` java
 @FXMLController
 public class ImageSearchController {
     //@FXML
@@ -65,12 +65,11 @@ public class ImageSearchController {
 }
 ```
 主程序
-```
-@SpringBootApplication
+``` java
+/**
+ * 注意: FX 启动的主类不能是 Spring 启动的主类
+ */
 public class OFXApp extends BaseOFXApplication {
-	public static void main(String[] args) {
-		launchOFX(OFXApp.class, TestView.class, args);
-	}
 
 	@Override
 	protected void scene(Scene scene) {
@@ -82,9 +81,17 @@ public class OFXApp extends BaseOFXApplication {
 		// custom settings
 	}
 }
+
+@SpringBootApplication
+public class SpringApp{
+
+	public static void main(String[] args) {
+		BaseOFXApplication.launchOFX(OFXApp.class, SpringApp.class, TestView.class, args);
+	}
+}
 ```
 module-info.java
-```
+``` java
 module cc.wanforme.ofxDemo {
 	requires cc.wanforme.ofx;
 
@@ -110,7 +117,7 @@ module cc.wanforme.ofxDemo {
 #### 单个 fxml 绑定多个 BaseView 类
 FXML 的 Controller 需要定义为多态。  
 `Scene` `FXMLLoader` `FXMLController` 是一对一的关系，复用 fxml 时请小心。虽然界面一样，但内部对象不一样。
-```
+``` java
 @FXMLController
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE) 
 public class ImageSearchController {
@@ -127,7 +134,7 @@ public class ImageSearchController {
 ### 打包
 如果使用 `mvn clean package` 打包失败，尝试用 IDE 打包。
 #### 使用 `spring-boot`传统方式打包
-```
+``` xml
 <build>
   <!-- app file name -->
   <finalName>ofxDemo-${project.version}</finalName>
@@ -143,7 +150,7 @@ public class ImageSearchController {
 </build>
 ```
 运行脚本 bat
-```
+``` bat
 set JAVA_HOME=C:\Program Files\Java\jdk-17.0.4.1
 "%JAVA_HOME%\bin\java.exe" -jar target/ofxDemo-0.0.1.jar 
 PAUSE
@@ -156,7 +163,7 @@ Unsupported JavaFX configuration: classes were loaded from 'unnamed module @4635
 
 #### 分离 openjfx 打包
 因为是 springboot 项目，所以还是要使用 springboot 的maven打包工具。
-```
+``` xml
 <build>
   <finalName>ofxDemo-${project.version}</finalName>
   <plugins>
@@ -194,7 +201,7 @@ Unsupported JavaFX configuration: classes were loaded from 'unnamed module @4635
 ```
 打包结束后， target 目录下会多出一个 libs 目录，里面包含 openjfx 依赖。  
 运行脚本 bat
-```
+``` bat
 set JAVA_HOME=C:\Program Files\Java\jdk-17.0.4.1
 cd target
 "%JAVA_HOME%\bin\java.exe"  -p libs --add-modules ALL-MODULE-PATH  -jar ofxDemo-0.0.1.jar 
