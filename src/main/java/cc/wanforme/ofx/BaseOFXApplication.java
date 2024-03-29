@@ -54,6 +54,8 @@ public abstract class BaseOFXApplication extends Application {
 		pStage.setScene(scene);
 		stage(pStage);
 		pStage.show();
+
+		afterShow();
 	}
 	
 	private static void startSpringApp(Class<?> clazz, String[] args) {
@@ -76,5 +78,8 @@ public abstract class BaseOFXApplication extends Application {
 	public static Stage getStage() {
 		return stage;
 	}
-	
+
+	/** do something after stage.show() */
+	protected void afterShow() {
+	}
 }
